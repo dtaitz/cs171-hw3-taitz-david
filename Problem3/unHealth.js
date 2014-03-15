@@ -161,7 +161,7 @@ createVis = function(dataSet) {
     svg.append("g")
         .attr("class", "y axis")
         .attr("transform", "translate(25," + newOverview + ")")
-        .call(yAxisDetail)
+        .call(yAxisDetail)        
       .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
@@ -192,12 +192,11 @@ createVis = function(dataSet) {
 
   var brush = d3.svg.brush().x(xOverviewScale).on("brush", brushed);
 
-  svg.append("g").attr("class", "brush").call(brushed)
+  svg.append("g").attr("class", "brush").call(brush)
       .selectAll("rect").attr({
         height: bbOverview.h,
         transform: "translate(0,0)"
       });
-
 
   function brushed() {
     xDetailScale.domain(brush.empty() ? xOverviewScale.domain() : brush.extent());
