@@ -25,11 +25,56 @@
             var content = root.find("#content"); // find all the nodes that have ID "content"
             var h2s = content.find(".mw-headline"); // search in all "content" nodes for nodes of class ".mw-headline"
 
-            $.each(h2s, function(index, value) {
-                console.log($(value).text()); // print text
+            var dataRows = content.find(".wikitable tbody tr:not(:has(th))");
+            var headerRows = content.find(".wikitable tbody tr:has(th)");    
+
+
+            var totalArray = []
+            var headerArray = [];
+            var dataArray = [];
+            var colHeaders = ["year,USCensus,PopulationBureau,UN,HYDE,Maddison"];
+
+            //console.log(dataRows);
+
+
+          $.each(headerRows, function(index, value) {
+                  var rowString = "";
+                  var ths = $(value).find("th");
+                  for (var i = 0;  i< 6; i++){
+                    var myData = $(ths[i]).children().first().text().trim(); 
+                    rowString += myData + ",";
+                  }
+              headerArray.push(rowString);
+              //console.log(headerArray);
             });
+          
+
+           $.each(dataRows, function(index, value) {
+                  var rowString = "";
+                  var tds = $(value).find("td");
+                  var first = $(tds[0]).text().trim();
+                  first = convertToInt(first);
+                  if (first >= 0) {
+                    for (var i = 0;  i < 6; i++){
+                      var myData = $(tds[i]).text().trim(); 
+                      myData = convertToInt(myData);
+                      //console.log(myData);
+                      if (myData != NaN && myData >= 0){
+                          rowString += myData + ",";
+                      }
+                      else {
+                          rowString += ",";
+                      }
+                    }
+                  dataArray.push(rowString);
+                  //console.log(dataArray);
+                  }
+            });
+
+           totalArray = colHeaders.concat(dataArray);
+           console.log(totalArray);
 			
-			saveToFile(["Hello World"],"test.txt")
+			saveToFile(totalArray,"World_population_estimates4.csv")
         },
         error: function() {
             return console.log("error");
@@ -43,6 +88,7 @@
     /* takes an array of strings
        and writes them line by line into a file given by filename
      */
+
     var saveToFile = function(arrayOfLines, fileName) {
        /* adds linebreaks at the end*/
        var blob, blobText;
