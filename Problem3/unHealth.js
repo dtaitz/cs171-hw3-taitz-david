@@ -101,13 +101,18 @@ createVis = function(dataSet) {
     xOverviewScale.domain(d3.extent(dataSet, function(d) { return d.date; }));
     yOverviewScale.domain(d3.extent(dataSet, function(d) { return d.womenshealth; }));
 
-    svg.append("g")
-        .attr("class", "x axis")
+
+
+    var overview = svg.append("g");
+    var detail = svg.append("g");
+
+    overview.append("g")
+        .attr("class", "xAxisOverview")
         .attr("transform", "translate(25," + bbOverview.h + ")")
         .call(xAxisOverview);
 
-    svg.append("g")
-        .attr("class", "y axis")
+    overview.append("g")
+        .attr("class", "yAxisOverview")
         .attr("transform", "translate(25,0)")
         .call(yAxisOverview)
       .append("text")
@@ -116,7 +121,7 @@ createVis = function(dataSet) {
         .attr("dy", ".71em")
 
 
-    svg.append("path")
+    overview.append("path")
         .datum(dataSet)
         .attr("class", "line")
         .attr("class","overviewPath")
@@ -126,7 +131,7 @@ createVis = function(dataSet) {
         .attr("d", lineOverview)
         .attr("d", areaOverview);
 
-    svg.append("g")
+    overview.append("g")
             .selectAll("circle")
             .attr("class","point")
             .data(dataSet)
@@ -158,10 +163,15 @@ createVis = function(dataSet) {
         .attr("transform", "translate(25," + newHeight + ")")
         .call(xAxisDetail);
 
-    svg.append("g")
-        .attr("class", "y axis")
+    detail.append("g")
+        .attr("class", "xAxisDetail")
+        .attr("transform", "translate(25," + newHeight + ")")
+        .call(xAxisDetail);
+
+    detail.append("g")
+        .attr("class", "yAxisDetail")
         .attr("transform", "translate(25," + newOverview + ")")
-        .call(yAxisDetail)        
+        .call(yAxisDetail)
       .append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
@@ -169,7 +179,7 @@ createVis = function(dataSet) {
         .style("text-anchor", "end")
         .text("Tweets");
 
-    svg.append("path")
+    detail.append("path")
         .datum(dataSet)
         .attr("transform", "translate(25," + newOverview + ")")
         .attr("class","detailPath")
@@ -179,7 +189,7 @@ createVis = function(dataSet) {
         .attr("d", lineDetail)
         .attr("d", areaDetail);
 
-    svg.append("g")
+    detail.append("g")
             .selectAll("circle")
             .attr("class","point")
             .data(dataSet)
@@ -189,6 +199,8 @@ createVis = function(dataSet) {
             .attr("cy", function(d) { return yDetailScale(d.womenshealth)+newOverview; })
             .attr("r", "3")
             .style("fill", "blue")
+
+}
 
   var brush = d3.svg.brush().x(xOverviewScale).on("brush", brushed);
 
@@ -200,11 +212,9 @@ createVis = function(dataSet) {
 
   function brushed() {
     xDetailScale.domain(brush.empty() ? xOverviewScale.domain() : brush.extent());
-    svg.select(".area").attr("d", areaOverview);
-    svg.select(".x.axis").call(xAxisDetail);
+    detail.select(".detailArea").attr("d", areaOverview);
+    detail.select(".x.axis").call(xAxisDetail);
   }; 
-
-}
 
 
 //console.log(dataSet);
